@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install MyApp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white flex flex-col items-center justify-center min-h-screen font-sans">
+
+  <!-- Container -->
+  <div class="text-center max-w-xl">
+    <h1 class="text-4xl font-bold mb-4">🚀 Install MyApp</h1>
+    <p class="text-gray-300 mb-8">Your cross‑platform solution. Choose your device below and start installing instantly.</p>
+
+    <!-- Buttons -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <a href="your-windows-link.exe" class="bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-2xl shadow-lg transition">💻 Windows</a>
+      <a href="your-macos-link.dmg" class="bg-gray-600 hover:bg-gray-700 px-4 py-3 rounded-2xl shadow-lg transition">🍏 macOS</a>
+      <a href="your-linux-link.AppImage" class="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-2xl shadow-lg transition">🐧 Linux</a>
+      <a href="your-android-link.apk" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-3 rounded-2xl shadow-lg transition">📱 Android</a>
+      <a href="your-ios-link" class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded-2xl shadow-lg transition">📱 iOS</a>
+      <a href="your-web-link" class="bg-pink-600 hover:bg-pink-700 px-4 py-3 rounded-2xl shadow-lg transition">🌐 Web</a>
+    </div>
+
+    <!-- Auto redirect example -->
+    <script>
+      // Example: redirect mobile users automatically to app store
+      if (/Android/i.test(navigator.userAgent)) {
+        window.location.href = "your-android-link.apk";
+      } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = "your-ios-link";
+      }
+    </script>
+
+    <!-- Footer -->
+    <p class="text-gray-500 text-sm mt-10">© 2025 MyApp. All rights reserved.</p>
+  </div>
+
+</body>
+</html>
