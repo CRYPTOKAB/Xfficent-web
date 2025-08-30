@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xfficent</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * {margin:0;padding:0;box-sizing:border-box;}
+  body {
+    font-family:'Roboto',sans-serif;
+    overflow-x:hidden;
+    min-height:100vh;
+    background:#0f2027;
+    color:#fff;
+  }
+
+  /* Particle Background */
+  canvas#bgCanvas{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    z-index:-1;
+  }
+
+  /* Navbar */
+  nav{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 60px; backdrop-filter:blur(15px); background:rgba(0,0,0,0.3);
+    position:fixed; width:100%; top:0; z-index:100;
+  }
+  nav h1{
+    font-family:'Orbitron',sans-serif;
+    font-size:2rem;color:#00f0ff;letter-spacing:2px;
+  }
+  nav ul{display:flex;gap:40px;list-style:none;}
+  nav ul li a{
+    text-decoration:none;color:#fff;font-weight:500;position:relative;transition:0.3s;
+  }
+  nav ul li a::after{
+    content:'';position:absolute;bottom:-5px;left:0;width:0;height:2px;background:#00f0ff;transition:0.3s;
+  }
+  nav ul li a:hover{color:#00f0ff;}
+  nav ul li a:hover::after{width:100%;}
+
+  /* Hero */
+  .hero{
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    height:100vh; text-align:center; padding-top:80px;
+  }
+  .hero h2{
+    font-family:'Orbitron',sans-serif;
+    font-size:3.5rem;
+    background:linear-gradient(90deg,#00f0ff,#ff00f0);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  .hero p{font-size:1.3rem;color:rgba(255,255,255,0.7); margin-top:15px;}
+
+  /* Devices Section */
+  .devices{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:40px; padding:80px 60px;
+  }
+  .card{
+    background:rgba(255,255,255,0.05); border-radius:25px; padding:40px 30px;
+    text-align:center; backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.15);
+    transition:0.5s; perspective:1000px; transform-style:preserve-3d;
+  }
+  .card:hover{
+    transform:rotateY(10deg) scale(1.05); box-shadow:0 0 40px #00f0ff,0 0 80px #ff00f0;
+  }
+  .card h3{font-size:1.6rem;margin-bottom:20px;color:#00f0ff;letter-spacing:1px;}
+  .card p{font-size:1rem;margin-bottom:25px;color:rgba(255,255,255,0.75);}
+  .btn{
+    display:inline-block;padding:14px 30px;font-weight:bold;font-size:1rem;border-radius:50px;
+    background:linear-gradient(90deg,#00f0ff,#ff00f0);color:#fff;text-decoration:none;
+    box-shadow:0 0 15px rgba(0,255,255,0.5),0 0 25px rgba(255,0,255,0.3); transition:0.3s;
+  }
+  .btn:hover{transform:scale(1.1); box-shadow:0 0 25px rgba(0,255,255,0.8),0 0 45px rgba(255,0,255,0.6);}
+
+  footer{
+    text-align:center;padding:30px;background:rgba(0,0,0,0.3);
+    color:rgba(255,255,255,0.6); font-size:0.9rem;
+  }
+
+  /* Animations */
+  @keyframes glow{
+    0%{text-shadow:0 0 10px #00f0ff,0 0 20px #ff00f0;}
+    100%{text-shadow:0 0 25px #00f0ff,0 0 40px #ff00f0;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <h1>Xfficent</h1>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Store</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <h2>Next-Gen Smart Devices</h2>
+  <p>Explore the future with our cutting-edge specimens.</p>
+</section>
+
+<section class="devices">
+  <div class="card">
+    <h3>Specimen X</h3>
+    <p>The original device that started it all.</p>
+    <a href="device1.html" class="btn">View</a>
+  </div>
+  <div class="card">
+    <h3>Specimen X Beta</h3>
+    <p>Test the experimental features before anyone else.</p>
+    <a href="device2.html" class="btn">View</a>
+  </div>
+  <div class="card">
+    <h3>Specimen X Connect</h3>
+    <p>Seamless connectivity for all your devices.</p>
+    <a href="device3.html" class="btn">View</a>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 Specimen Lab. All rights reserved.
+</footer>
+
+<script>
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w=canvas.width=window.innerWidth;
+let h=canvas.height=window.innerHeight;
+let particles=[];
+for(let i=0;i<100;i++){
+  particles.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*2+1, dx:(Math.random()-0.5)*0.5, dy:(Math.random()-0.5)*0.5});
+}
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  for(let p of particles){
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,255,255,0.2)';
+    ctx.fill();
+    p.x+=p.dx;
+    p.y+=p.dy;
+    if(p.x<0||p.x>w)p.dx*=-1;
+    if(p.y<0||p.y>h)p.dy*=-1;
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+window.addEventListener('resize',()=>{w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight;});
+</script>
+
+</body>
+</html>

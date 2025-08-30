@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Specimen X Configurator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a, #6b21a8, #1e40af);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    /* 3D-like product image with dynamic overlays */
+    .product-img {
+      perspective: 1000px;
+      position: relative;
+      transition: transform 0.5s ease;
+    }
+
+    .product-img img {
+      transition: transform 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease;
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    .product-img:hover img {
+      transform: translateZ(40px) rotateY(15deg);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      filter: brightness(1.1);
+    }
+
+    /* Port indicators */
+    .port-overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .port-indicator {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: glowPulse 1.5s infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 5px #22c55e; }
+      50% { box-shadow: 0 0 15px #22c55e; }
+    }
+
+    /* Fade-in animation for main content */
+    main {
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Button glow and scale animation */
+    .config-button {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .config-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.6s ease;
+    }
+
+    .config-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+    }
+
+    .config-button:hover::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeInModal 0.4s ease-out;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      transform: scale(0.7);
+      animation: scaleIn 0.4s ease-out forwards;
+      color: white;
+      border: 1px solid #22c55e;
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      to { transform: scale(1); }
+    }
+
+    /* Color swatch animation */
+    .color-swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+
+    .color-swatch.selected {
+      border-color: #22c55e;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-gray-900 p-4 flex justify-between items-center">
+    <h1 class="text-3xl font-bold">Specimen X Configurator</h1>
+  </header>
+
+  <main class="max-w-7xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+    <div class="product-img bg-gray-800 rounded-xl p-6 shadow-2xl relative">
+      <img id="productImage" src="https://via.placeholder.com/400x300/000000" alt="Specimen X" class="w-full rounded-xl" />
+      <div id="portOverlay" class="port-overlay"></div>
+    </div>
+    <div class="product-details bg-gray-800 p-6 rounded-xl shadow-2xl">
+      <h2 class="text-3xl font-semibold">Specimen X</h2>
+      <p class="text-gray-300 mt-2">Next-gen customizable smart device with advanced connectivity, AI integration, and modular design.</p>
+
+      <div class="price text-3xl font-bold text-green-400 mt-4" id="price">$299.99</div>
+
+      <div class="options mt-6">
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Color:</span>
+          <div class="flex gap-4 mt-2">
+            <div class="color-swatch bg-black selected" data-color="black" onclick="updateColor('black', 'https://via.placeholder.com/400x300/000000')"></div>
+            <div class="color-swatch bg-white" data-color="white" onclick="updateColor('white', 'https://via.placeholder.com/400x300/FFFFFF')"></div>
+            <div class="color-swatch bg-gray-400" data-color="silver" onclick="updateColor('silver', 'https://via.placeholder.com/400x300/C0C0C0')"></div>
+            <div class="color-swatch bg-blue-600" data-color="blue" onclick="updateColor('blue', 'https://via.placeholder.com/400x300/2563EB')"></div>
+          </div>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Storage:</span>
+          <select id="storage" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="64">64GB</option>
+            <option value="128">128GB</option>
+            <option value="256">256GB</option>
+            <option value="512">512GB</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Ports:</span>
+          <select id="ports" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="2">2 USB-C Ports</option>
+            <option value="4">4 USB-C Ports</option>
+            <option value="6">6 USB-C Ports</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Connectivity:</span>
+          <select id="connectivity" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="wired">Wired (10Gbps)</option>
+            <option value="wifi6">Wi-Fi 6 (1.2Gbps)</option>
+            <option value="wifi7">Wi-Fi 7 (2.4Gbps)</option>
+            <option value="5g">5G (4Gbps)</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">AI Integration:</span>
+          <select id="aiModule" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="none">None</option>
+            <option value="standard">Standard AI</option>
+            <option value="advanced">Advanced AI</option>
+            <option value="pro">Pro AI</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Battery Capacity:</span>
+          <select id="battery" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="standard">Standard (4000mAh)</option>
+            <option value="extended">Extended (6000mAh)</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-lg font-medium">Display Type:</span>
+          <select id="display" class="p-2 border rounded-lg w-full bg-gray-700 text-white mt-2" onchange="updatePrice()">
+            <option value="oled">OLED (120Hz)</option>
+            <option value="amoled">AMOLED (144Hz)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="mt-8 flex gap-4">
+        <button class="config-button bg-yellow-400 text-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500" onclick="addToCart()">Add to Cart</button>
+        <button class="config-button bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600" onclick="openBuyNowModal()">Buy Now</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Buy Now Modal -->
+  <div id="buyNowModal" class="modal">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4">Confirm Your Specimen X</h2>
+      <p class="text-gray-300 mb-4">You're about to purchase <span id="modalProduct">Specimen X</span> with <span id="modalStorage">64GB</span> storage, <span id="modalColor">Black</span> color, <span id="modalPorts">2 USB-C Ports</span>, <span id="modalConnectivity">Wired (10Gbps)</span>, <span id="modalAI">None</span> AI integration, <span id="modalBattery">Standard (4000mAh)</span> battery, and <span id="modalDisplay">OLED (120Hz)</span> display for <span id="modalPrice">$299.99</span>.</p>
+      <div class="flex gap-4 justify-center">
+        <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700" onclick="closeBuyNowModal()">Cancel</button>
+        <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600" onclick="confirmPurchase()">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentColor = 'black';
+    let currentStorage = '64';
+    let currentPorts = '2';
+    let currentConnectivity = 'wired';
+    let currentAI = 'none';
+    let currentBattery = 'standard';
+    let currentDisplay = 'oled';
+
+    function updateColor(color, imageUrl) {
+      currentColor = color;
+      document.getElementById('productImage').src = imageUrl;
+      document.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.classList.remove('selected');
+        if (swatch.dataset.color === color) {
+          swatch.classList.add('selected');
+        }
+      });
+      updateModal();
+    }
+
+    function updatePortsOverlay() {
+      const portCount = parseInt(currentPorts);
+      const overlay = document.getElementById('portOverlay');
+      overlay.innerHTML = '';
+      for (let i = 0; i < portCount; i++) {
+        const indicator = document.createElement('div');
+        indicator.className = 'port-indicator';
+        overlay.appendChild(indicator);
+      }
+    }
+
+    function updatePrice() {
+      currentStorage = document.getElementById('storage').value;
+      currentPorts = document.getElementById('ports').value;
+      currentConnectivity = document.getElementById('connectivity').value;
+      currentAI = document.getElementById('aiModule').value;
+      currentBattery = document.getElementById('battery').value;
+      currentDisplay = document.getElementById('display').value;
+
+      let basePrice = currentStorage === '64' ? 299.99 : currentStorage === '128' ? 349.99 : currentStorage === '256' ? 399.99 : 499.99;
+      let portsPrice = currentPorts === '2' ? 0 : currentPorts === '4' ? 20 : 40;
+      let connectivityPrice = currentConnectivity === 'wired' ? 0 : currentConnectivity === 'wifi6' ? 30 : currentConnectivity === 'wifi7' ? 50 : 80;
+      let aiPrice = currentAI === 'none' ? 0 : currentAI === 'standard' ? 25 : currentAI === 'advanced' ? 50 : 100;
+      let batteryPrice = currentBattery === 'standard' ? 0 : 30;
+      let displayPrice = currentDisplay === 'oled' ? 0 : 40;
+
+      let totalPrice = basePrice + portsPrice + connectivityPrice + aiPrice + batteryPrice + displayPrice;
+      document.getElementById('price').textContent = `$${totalPrice.toFixed(2)}`;
+      updatePortsOverlay();
+      updateModal();
+    }
+
+    function updateModal() {
+      document.getElementById('modalProduct').textContent = 'Specimen X';
+      document.getElementById('modalStorage').textContent = `${currentStorage}GB`;
+      document.getElementById('modalColor').textContent = currentColor.charAt(0).toUpperCase() + currentColor.slice(1);
+      document.getElementById('modalPorts').textContent = `${currentPorts} USB-C Ports`;
+      document.getElementById('modalConnectivity').textContent = currentConnectivity === 'wired' ? 'Wired (10Gbps)' : currentConnectivity === 'wifi6' ? 'Wi-Fi 6 (1.2Gbps)' : currentConnectivity === 'wifi7' ? 'Wi-Fi 7 (2.4Gbps)' : '5G (4Gbps)';
+      document.getElementById('modalAI').textContent = currentAI === 'none' ? 'No' : currentAI.charAt(0).toUpperCase() + currentAI.slice(1);
+      document.getElementById('modalBattery').textContent = currentBattery === 'standard' ? 'Standard (4000mAh)' : 'Extended (6000mAh)';
+      document.getElementById('modalDisplay').textContent = currentDisplay === 'oled' ? 'OLED (120Hz)' : 'AMOLED (144Hz)';
+      document.getElementById('modalPrice').textContent = document.getElementById('price').textContent;
+    }
+
+    function addToCart() {
+      alert(`Added Specimen X (${currentStorage}GB, ${currentColor}, ${currentPorts} Ports, ${currentConnectivity}, ${currentAI} AI, ${currentBattery} Battery, ${currentDisplay} Display) to cart!`);
+    }
+
+    function openBuyNowModal() {
+      updateModal();
+      document.getElementById('buyNowModal').style.display = 'flex';
+    }
+
+    function closeBuyNowModal() {
+      document.getElementById('buyNowModal').style.display = 'none';
+    }
+
+    function confirmPurchase() {
+      closeBuyNowModal();
+      alert(`Purchase confirmed for Specimen X (${currentStorage}GB, ${currentColor}, ${currentPorts} Ports, ${currentConnectivity}, ${currentAI} AI, ${currentBattery} Battery, ${currentDisplay} Display)! Redirecting to payment...`);
+      // Add actual payment redirect logic here
+    }
+
+    // Initialize port overlay
+    updatePortsOverlay();
+  </script>
